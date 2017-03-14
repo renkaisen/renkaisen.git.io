@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<!-- <link rel="stylesheet" href="list/bootstrap.js"> -->
+	<link rel="stylesheet" href="list/bootstrap.min.css">
+	<script src="list/jquery-1.7.2.js"></script>
+	<script src="list/vue.js"></script>
+	<script src="list/vue-resource.js"></script>
+	<style>
+	body{
+		overflow-y: scroll;
+		position: relative;
+		/*background-color: #F0DCC0;*/
+	}
+
+		ul{
+			list-style: none;
+			padding-left: 103px;
+
+		}
+		a{
+			text-decoration-color: none;
+			text-decoration: none;
+		}
+
+		.gray{
+			background-color: #ccc;
+		}
+
+		.s-p-top{
+			height: 61.8%;
+			min-height: 181px;
+			position: relative;
+			z-index: 0;
+			text-align: center;
+		}
+		.s-p-top img{
+			position: absolute;
+			bottom: 10px;
+			left: 50%;
+			margin-left: -135px;
+			width: 270px;
+			height: 129px;
+		}
+
+		/*//中间的input的大盒子*/
+		.n-r-center{
+			position: relative;
+			/*display: inline-block;*/
+			zoom:1;
+			vertical-align: top;
+			/*left: 50%;*/
+			width: 641px;
+			left: 28%;
+		}
+		.n-r-center .n-r-put1{
+			width: 555px!important;
+			padding-right: 48px!important;
+			outline: none;
+			border: 1px solid #b8b8b8;
+			font:16px arial;
+			padding: 9px 103px;
+			vertical-align: top;
+			box-shadow: none;
+			/*height: 20px;*/
+		}
+
+		.n-r-center .n-r-bot{
+			position: absolute;
+			left: 0;
+			top: 0;
+			cursor: pointer;
+			width: 102px;
+			height: 38px;
+			line-height: 38px;
+			padding: 0;
+			bottom: 0;
+			font-size: 16px;
+			box-shadow: none;
+			color: red;
+		}
+		/*ul中的li*/
+		.n-r-l{
+			width: 519px;
+			color: #000;
+			font: 14px arial;
+			line-height: 25px;
+			padding: 0 8px;
+			cursor: default;
+			padding-left: 103px;
+		}
+		.container-fluid p{
+			font-size: 14px arial;
+			color: #999;
+			position: fixed;
+			bottom: 10%;
+			left: 42%;
+		}
+
+
+	</style>
+
+	<script>
+		window.onload = function () {
+			var app = new Vue({
+				el:'body',
+				//数据
+				data:{
+					myData:[
+
+					],
+					t1:'',
+					now:-1
+				},
+				//方法
+				methods:{
+					show:function(){
+						// alert(1);
+					},
+					//当用户输入字符的时候，请求http 请求接口
+					get:function (e) {
+
+						//判断如果输入的是上，下建，直接退出；
+						if(e.keyCode==38||e.keyCode==40)return;
+
+						//如果输入的是回车，直接去请求数据
+						if(e.keyCode == 13){
+							window.open('https://www.baidu.com/s?wd='+this.t1);
+							this.t1 = '';
+						}
+						console.log(e);
+						if(e.type =='click'){
+							// alert(1);
+							window.open('https://www.baidu.com/s?wd='+this.t1);
+							this.t1 = '';
+						}
+
+						//请求
+						this.$http.jsonp('https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su',{
+							//请求输入当前的名字
+							wd:this.t1
+						},{
+							//设置callback的名字
+							jsonp:'cb'
+						}).then(function(res){
+							//请求成功，把数据放到数组中
+							this.myData=res.data.s;
+
+						},function(res){
+							//请求失败
+							alert(res.status);
+							console.log(1);
+						})
+					},
+					//如果输入的是下建
+					changeDown:function(){
+						//索引加+1
+						this.now++;
+						if(this.now == this.myData.length){
+							this.now=-1;
+						}
+						this.t1=this.myData[this.now];
+					},
+					//按上的键盘
+					changeUp:function(){
+						this.now--;
+						if(this.now==-2)this.now = this.myData.length-1;
+						this.t1= this.myData[this.now];
+					}
+				}
+			})
+		}
+	</script>
+</head>
+<body>
+
+	<!-- 一个假百度 -->
+	<div class="container-fluid">
+		<div class="s-p-top">
+			<img src="list/bd_logo1_31bdc765.png" alt="">
+		</div>
+		<div class="n-r-center">
+			<input class = 'n-r-put1'type="text" v-model = 't1' @keyup = 'get($event)' @keydown.down = 'changeDown()' @keyup.up.prevent = 'changeUp()'>
+			<ul class="n-r-l">
+				<li v-for ='value in myData':class='{gray:$index==now}'>
+					{{value}}
+				</li>
+			</ul>
+			<span></span>
+			<input class="n-r-bot" type="button" class="btn" value="搜索" @click = 'get($event)' >
+		</div>
+
+		<p><a href="./kaixin/index.html">牵着一只小鹿回家,荣誉出品</a></p>
+
+	</div>
+</body>
+</html>
